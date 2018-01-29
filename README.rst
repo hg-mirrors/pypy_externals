@@ -1,7 +1,7 @@
 Reproducing the binaries here
 =============================
 
-These binaries were produced with Visual Studio 9.0
+These binaries were produced with VS 14.0, i.e. Visual Studio 2017
 
 
 The Boehm garbage collector
@@ -30,7 +30,10 @@ You may want to disable this with the following patch::
                #   else
                       GC_err_printf("%s\n", msg);
 
-Then open a command prompt::
+For VS14 I needed to comment out the `define abs` on line 1245 in
+`include/privat/gc_priv.h`
+
+Then open a "Developer Command Prompt"::
 
     cd gc-7.1
     nmake -f NT_THREADS_MAKEFILE
@@ -78,7 +81,7 @@ to reproduce the static lib in version 2.2.4.
 
 Download the source code of expat: https://github.com/libexpat/libexpat. 
 ``git checkout`` the proper tag, in this case ``R_2_2_4``. Run
-``vcvars.bat`` to set up the visual compiler tools, and CD into the source
+``vcvars.bat`` to set up the visual compiler tools, and CD into the `Source/lib`
 directory. Create a file ``stdbool.h`` with the content
 
 .. code-block:: c
@@ -157,12 +160,13 @@ The OpenSSL library
 ~~~~~~~~~~~~~~~~~~~
 
 OpenSSL needs a Perl interpreter to configure its makefile.  You may
-use the one distributed by ActiveState, or the one from cygwin.::
+use the one distributed by ActiveState, or the one from cygwin. It also needs
+the NASM assembler.::
 
     svn export http://svn.python.org/projects/external/openssl-1.0.2k
     cd openssl-1.0.2k
     perl Configure VC-WIN32 no-idea no-mdc2
-    ms\do_ms.bat
+    ms\do_nasm.bat
     nmake -f ms\nt.mak install
     copy out32\*.lib <somewhere in LIB>
     xcopy /S include\openssl <somewhere in INCLUDE>
@@ -202,13 +206,6 @@ http://tukaani.org/xz/xz-5.0.5-windows.zip.sig
 
 Then copy the headers to the include directory, rename ``liblzma.a`` to 
 ``lzma.lib`` and copy it to the lib directory
-
-
-
-
-The following libraries were copied from a build of CPython 2.7.13:
-sqlite3
-bzlib
 
 Note that the libeay32.dll and ssleay32.dll files are for testing only,
 PyPy will statically link to libeay32.lib and ssleay32.lib
