@@ -1,7 +1,8 @@
 Reproducing the binaries here
 =============================
 
-These binaries were produced with VS 14.0, i.e. Visual Studio 2017
+These binaries were produced with VS 14.0, i.e. Visual Studio 2017, 
+but should work for VS 14.1 as well
 
 
 The Boehm garbage collector
