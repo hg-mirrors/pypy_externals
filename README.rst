@@ -1,7 +1,8 @@
 Reproducing the binaries here
 =============================
 
-These binaries were produced with VS 14.0, i.e. Visual Studio 2017
+These binaries were produced with VS 14.0, i.e., Visual Studio 2017, but
+work with VS 15.0 i.e., Visual Studio 2019
 
 
 The Boehm garbage collector
@@ -30,14 +31,15 @@ You may want to disable this with the following patch::
                #   else
                       GC_err_printf("%s\n", msg);
 
-For VS14 I needed to comment out the `define abs` on line 1245 in
+For VS14+ I needed to comment out the `define abs` on line 1245 in
 `include/privat/gc_priv.h`
 
 Then open a "Developer Command Prompt"::
 
     cd gc-7.1
     nmake -f NT_THREADS_MAKEFILE
-    copy Release\gc.dll <somewhere in the PATH>
+    copy Release\gc.dll externals\bin
+    copy Release\gc.lib externals\lib
 
 
 The zlib compression library
@@ -103,40 +105,6 @@ Then compile all the ``*.c`` file into ``*.obj``::
     cl.exe /nologo /MD  /O2 *c /c
     rem for debug
     cl.exe /nologo /MD  /O0 /Ob0 /Zi *c /c
-
-You may need to move some variable declarations to the beginning of the
-function, to be compliant with C89 standard. Here is the diff for version 2.2.4
-
-.. code-block:: diff
-
-    diff --git a/expat/lib/xmltok.c b/expat/lib/xmltok.c
-    index 007aed0..a2dcaad 100644
-    --- a/expat/lib/xmltok.c
-    +++ b/expat/lib/xmltok.c
-    @@ -399,19 +399,21 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
-       /* Avoid copying partial characters (due to limited space). */
-       const ptrdiff_t bytesAvailable = fromLim - *fromP;
-       const ptrdiff_t bytesStorable = toLim - *toP;
-    +  const char * fromLimBefore;
-    +  ptrdiff_t bytesToCopy;
-       if (bytesAvailable > bytesStorable) {
-         fromLim = *fromP + bytesStorable;
-         output_exhausted = true;
-       }
-
-       /* Avoid copying partial characters (from incomplete input). */
-    -  const char * const fromLimBefore = fromLim;
-    +  fromLimBefore = fromLim;
-       align_limit_to_full_utf8_characters(*fromP, &fromLim);
-       if (fromLim < fromLimBefore) {
-         input_incomplete = true;
-       }
-
-    -  const ptrdiff_t bytesToCopy = fromLim - *fromP;
-    +  bytesToCopy = fromLim - *fromP;
-       memcpy((void *)*toP, (const void *)*fromP, (size_t)bytesToCopy);
-       *fromP += bytesToCopy;
-       *toP += bytesToCopy;
 
 
 Create ``libexpat.lib`` (for translation) and ``libexpat.dll`` (for tests)::
