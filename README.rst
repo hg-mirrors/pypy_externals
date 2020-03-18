@@ -2,6 +2,7 @@ Reproducing the binaries here
 =============================
 
 These binaries were produced with VS 14.0, i.e. Visual Studio 2017
+but should work with VS 16.0 i.e. Visual Studio 2019 as well
 
 
 The Boehm garbage collector
