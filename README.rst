@@ -68,10 +68,16 @@ Get the same version of bz2 used by python and compile as a static library::
 The sqlite3 database library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PyPy uses cffi to interact with sqlite3.dll. Only the dll is needed, the cffi
-wrapper is compiled when the module is imported for the first time.
-The sqlite3.dll should be version 3.8.11 for CPython2.7 compatablility.
+Get the latest version from CPython and build the dll and lib::
 
+    git clone https://github.com/python/cpython-source-deps
+    cd cpython-source-deps
+    git checkout sqlite
+    cl -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 \
+       -DSQLITE_API=__declspec(dllexport) -LD sqlite3.c
+    copy *.h <somewhere in INCLUDE>
+    copy *.lib <somewhere in LIB>
+    copy *.dll <somewhere in BIN>
 
 The expat XML parser
 ~~~~~~~~~~~~~~~~~~~~
@@ -160,18 +166,13 @@ Then, copy
 The OpenSSL library
 ~~~~~~~~~~~~~~~~~~~
 
-OpenSSL needs a Perl interpreter to configure its makefile.  You may
-use the one distributed by ActiveState, or the one from cygwin. It also needs
-the NASM assembler.::
+OpenSSL is built by CPython, so use their version:
 
-    svn export http://svn.python.org/projects/external/openssl-1.0.2k
-    cd openssl-1.0.2k
-    perl Configure VC-WIN32 no-idea no-mdc2
-    ms\do_nasm.bat
-    nmake -f ms\nt.mak install
-    copy out32\*.lib <somewhere in LIB>
-    xcopy /S include\openssl <somewhere in INCLUDE>
-
+    git clone https://github.com/python/cpython-bin-deps.git
+    cd cpython-bin-deps
+    git checkout openssl-bin
+    cd win32\include
+    xcopy openssl  thisdir\include /s
 For tests you will also need the dlls::
     nmake -f ms\ntdll.mak install
     copy out32dll\*.dll <somewhere in PATH>
