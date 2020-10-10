@@ -218,16 +218,16 @@ deps = {
             r"generic\tcl.h": {
                 # disable compatibility code for very old MSVC
                 "#         if _MSC_VER < 1400 || !defined(_M_IX86)\n"
-                "typedef struct _stati64 Tcl_StatBuf;":
+                "typedef struct _stati64\tTcl_StatBuf;":
                     "#         if _MSC_VER < 1400\n"
-                    "typedef struct _stati64 Tcl_StatBuf;",
+                    "typedef struct _stati64\tTcl_StatBuf;",
             },
             r"win\tclWinPort.h": {
                 # modern MSVC no longer defines timezone alias, need to use _timezone
                 "#    if defined(__MINGW32__) && !defined(__MSVCRT__)\n"
-                "# define timezone _timezone\n"
+                "#\tdefine timezone _timezone\n"
                 "#    endif":
-                    "# define timezone _timezone",
+                    "#\tdefine timezone _timezone",
             },
         },
         "build": [
