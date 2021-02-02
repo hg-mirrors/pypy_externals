@@ -200,36 +200,9 @@ deps = {
         "bins": [r"bin_{xz_arch}\liblzma.dll"],
     },
     "tcl": {
-        "url": "https://master.dl.sourceforge.net/project/tcl/Tcl/8.5.2/tcl8.5.2-src.tar.gz",
-        "filename": "tcl8.5.2-src.tar.gz",
-        "dir": "tcl8.5.2",
-        "patch": {
-            r"generic\tclPosixStr.c": {
-                # these were added as duplicates in modern MSVC, skip
-                'case EPFNOSUPPORT: return "EPFNOSUPPORT";':
-                    '/*case EPFNOSUPPORT: return "EPFNOSUPPORT";*/',
-                'case ESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";':
-                    '/*case ESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";*/',
-                'case EPFNOSUPPORT: return "protocol family not supported";':
-                    '/*case EPFNOSUPPORT: return "protocol family not supported";*/',
-                'case ESOCKTNOSUPPORT: return "socket type not supported";':
-                    '/*case ESOCKTNOSUPPORT: return "socket type not supported";*/',
-            },
-            r"generic\tcl.h": {
-                # disable compatibility code for very old MSVC
-                "#         if _MSC_VER < 1400 || !defined(_M_IX86)\n"
-                "typedef struct _stati64\tTcl_StatBuf;":
-                    "#         if _MSC_VER < 1400\n"
-                    "typedef struct _stati64\tTcl_StatBuf;",
-            },
-            r"win\tclWinPort.h": {
-                # modern MSVC no longer defines timezone alias, need to use _timezone
-                "#    if defined(__MINGW32__) && !defined(__MSVCRT__)\n"
-                "#\tdefine timezone _timezone\n"
-                "#    endif":
-                    "#\tdefine timezone _timezone",
-            },
-        },
+        "url": "https://prdownloads.sourceforge.net/tcl/tcl8.6.9-src.tar.gz",
+        "filename": "tcl8.6.9-src.tar.gz",
+        "dir": "tcl8.6.9",
         "build": [
             cmd_cd("win"),
             cmd_set("COMPILERFLAGS", "-DWINVER=0x0500"),
@@ -239,44 +212,29 @@ deps = {
             cmd_nmake("makefile.vc", "clean"),
             cmd_nmake("makefile.vc", "all"),
             cmd_nmake("makefile.vc", "install"),
-            cmd_xcopy(r"{tcltk_dir}\lib\tcl8.5", r"{lib_dir}\tcl8.5")
+            cmd_xcopy(r"{tcltk_dir}\lib\tcl8.6", r"{lib_dir}\tcl8.6")
         ],
-        "headers": [r"{tcltk_dir}\include\tommath*.h", r"{tcltk_dir}\include\tcl*.h"],
+        "headers": [r"{tcltk_dir}\include\*.h"],
         "libs": [r"{tcltk_dir}\lib\tcl*.lib"],
         "bins": [r"{tcltk_dir}\bin\tcl*.dll"],
     },
     "tk": {
-        "url": "https://master.dl.sourceforge.net/project/tcl/Tcl/8.5.2/tk8.5.2-src.tar.gz",
-        "filename": "tk8.5.2-src.tar.gz",
-        "dir": "tk8.5.2",
-        "patch": {
-            r"win\tkWinPort.h": {
-                # appears to be unused, conflicts with modern Win SDK
-                "struct timezone {{\n"
-                "    int tz_minuteswest;\n"
-                "    int tz_dsttime;\n"
-                "}};":
-                    "/*\n"
-                    " * struct timezone {{\n"
-                    " *     int tz_minuteswest;\n"
-                    " *     int tz_dsttime;\n"
-                    " * }};\n"
-                    " */",
-            },
-        },
+        "url": "https://prdownloads.sourceforge.net/tcl/tk8.6.9.1-src.tar.gz",
+        "filename": "tk8.6.9.1-src.tar.gz",
+        "dir": "tk8.6.9",
         "build": [
             cmd_cd("win"),
             cmd_set("COMPILERFLAGS", "-DWINVER=0x0500"),
             cmd_set("OPTS", "noxp"),
             cmd_set("DEBUG", "1"),
             cmd_set("INSTALLDIR", r"{tcltk_dir}"),
-            cmd_set("TCLDIR", r"{build_dir}\tcl8.5.2"),
+            cmd_set("TCLDIR", r"{build_dir}\tcl8.6.9"),
             cmd_set("MACHINE", "{tcl_arch}"),
             cmd_nmake("makefile.vc", "clean"),
             cmd_nmake("makefile.vc", "all"),
             cmd_nmake("makefile.vc", "install"),
             cmd_xcopy(r"{tcltk_dir}\include\X11", r"{inc_dir}\X11"),
-            cmd_xcopy(r"{tcltk_dir}\lib\tk8.5", r"{lib_dir}\tk8.5")
+            cmd_xcopy(r"{tcltk_dir}\lib\tk8.6", r"{lib_dir}\tk8.6")
         ],
         "headers": [r"{tcltk_dir}\include\tk*.h"],
         "libs": [r"{tcltk_dir}\lib\tk*.lib"],
