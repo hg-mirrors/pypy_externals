@@ -225,8 +225,7 @@ deps = {
         "build": [
             cmd_cd("win"),
             cmd_set("COMPILERFLAGS", "-DWINVER=0x0500"),
-            cmd_set("OPTS", "noxp"),
-            cmd_set("DEBUG", "1"),
+            cmd_set("DEBUG", "0"),
             cmd_set("INSTALLDIR", r"{tcltk_dir}"),
             cmd_set("TCLDIR", r"{build_dir}\tcl8.6.9"),
             cmd_set("MACHINE", "{tcl_arch}"),
