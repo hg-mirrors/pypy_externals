@@ -54,6 +54,7 @@ architectures = {
         "xz_arch": "i486",
         "tcl_arch": "IX86",
         "vcvars_arch": "x86",
+        "openssl_arch": "VC-WIN32",
     },
     "x64": {
         "cpython_arch": "amd64",
@@ -62,6 +63,7 @@ architectures = {
         "xz_arch": "x86-64",
         "tcl_arch": "AMD64",
         "vcvars_arch": "x86_amd64",
+        "openssl_arch": "VC-WIN64A-masm",
     },
 }
 
@@ -165,18 +167,7 @@ deps = {
         "libs": [r"libexpat.lib"],
         "bins": [r"libexpat.dll"],
     },
-    "openssl-legacy": {
-        # use pre-built OpenSSL from CPython
-        "url": "https://github.com/python/cpython-bin-deps/archive/openssl-bin-1.0.2k.zip",
-        "filename": "openssl-bin-1.0.2k.zip",
-        "dir": "cpython-bin-deps-openssl-bin-1.0.2k",
-        "build": [
-            cmd_xcopy(r"{cpython_arch}\include", "{inc_dir}"),
-        ],
-        "libs": [r"{cpython_arch}\lib*.lib"],
-        "bins": [r"{cpython_arch}\lib*.dll"],
-    },
-    "openssl": {
+    "openssl-cpython": {
         # use pre-built OpenSSL from CPython
         "url": "https://github.com/python/cpython-bin-deps/archive/openssl-bin-1.1.1g.tar.gz",
         "filename": "openssl-bin-1.1.1g.tar.gz",
@@ -186,6 +177,18 @@ deps = {
         ],
         "libs": [r"{cpython_arch}\lib*.lib"],
         "bins": [r"{cpython_arch}\lib*.dll"],
+    },
+    "openssl": {
+        "url": "https://www.openssl.org/source/openssl-1.1.1k.tar.gz",
+        "filename": "openssl-1.1.1k.tar.gz",
+        "dir": "openssl-1.1.1k",
+        "build": [
+            "perl configure {openssl_arch} no-asm",
+            cmd_nmake(),
+            cmd_xcopy(r"include\openssl", "{inc_dir}\openssl"),
+        ],
+        "libs": [r"libcrypto.lib", r"libssl.lib"],
+        "bins": [r"libcrypto-1_1.dll", r"libssl-1_1.dll"],
     },
     "lzma": {
         "url": "https://tukaani.org/xz/xz-5.0.5-windows.zip",
@@ -494,7 +497,7 @@ if __name__ == "__main__":
     winbuild_dir = os.path.dirname(os.path.realpath(__file__))
 
     verbose = False
-    disabled = ["openssl-legacy"]
+    disabled = ["openssl-cpython"]
     depends_dir = os.path.join(winbuild_dir, "cache")
     architecture = "x86"
     build_dir = os.path.join(winbuild_dir, "build")
@@ -508,8 +511,8 @@ if __name__ == "__main__":
             architecture = arg[15:]
         elif arg.startswith("--dir="):
             build_dir = os.path.abspath(arg[6:])
-        elif arg == "--legacy-openssl":
-            disabled.remove("openssl-legacy")
+        elif arg == "--cpython-openssl":
+            disabled.remove("openssl-cpython")
             disabled.append("openssl")
         elif arg == "--with-tk":
             force_tk = True
@@ -617,3 +620,8 @@ if __name__ == "__main__":
               "You may have to specify the target SDK version in the function 'find_msvs()' "
               "by replacing 'call \"{}\" {{vcvars_arch}}' with 'call \"{}\" {{vcvars_arch}} <sdk_version>'."
               % os.path.basename(__file__))
+
+    if "openssl" not in disabled:
+        if shutil.which("perl") is None:
+            print()
+            print("!!! perl.exe not found in PATH, compiling OpenSSL might fail.")
