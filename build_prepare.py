@@ -128,10 +128,9 @@ deps = {
         "libs": [r"libbz2.lib"],
     },
     "sqlite3": {
-        # latest as of 2020-07-30 is 3.32.3.0
-        "url": "https://github.com/python/cpython-source-deps/archive/sqlite-3.32.3.0.zip",
-        "filename": "sqlite-3.32.3.0.zip",
-        "dir": "cpython-source-deps-sqlite-3.32.3.0",
+        "url": "https://sqlite.org/2021/sqlite-amalgamation-3350500.zip",
+        "filename": "sqlite-amalgamation-3350500.zip",
+        "dir": "sqlite-amalgamation-3350500",
         "build": [
             cmd_copy(r"{winbuild_dir}\sqlite3.nmake", r"makefile.msc"),
             cmd_nmake(r"makefile.msc", "clean"),
